@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DC View</string>
+    <string name="fa_next">&#xf105;</string>
+    <string name="fa_previous">&#xf104;</string>
+</resources>

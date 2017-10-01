@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dc_month_header_bg">#0066B4</color>
+    <color name="dc_row_separator">#F5F5F5</color>
+    <color name="ripple_select_color">#eee7e7</color>
+</resources>
