@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/dcHeaderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/dc_month_header_bg">
+
+        <TextView
+            android:id="@+id/previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dc_month_button_padding"
+            android:gravity="center"
+            android:text="@string/fa_previous"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:background="@drawable/ripple_month_selector"/>
+
+        <TextView
+            android:id="@+id/dcHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <TextView
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dc_month_button_padding"
+            android:gravity="center"
+            android:text="@string/fa_next"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:background="@drawable/ripple_month_selector"/>
+    </LinearLayout>
+
+    <com.vikramezhil.droidcalendarview.DCGridView
+        android:id="@+id/dcGV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:columnWidth="@dimen/dc_grid_column_width"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
+        android:gravity="center"
+        android:numColumns="@string/dc_columns"
+        android:stretchMode="columnWidth"
+        android:background="@android:color/white"/>
+</LinearLayout>

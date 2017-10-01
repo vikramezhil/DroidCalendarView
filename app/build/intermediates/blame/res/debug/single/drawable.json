@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/vikram/Documents/Development/Libraries/Vikram/DroidCalendarView/app/build/intermediates/res/merged/debug/drawable/ripple_month_selector.xml",
+        "source": "/Users/vikram/Documents/Development/Libraries/Vikram/DroidCalendarView/DCView/build/intermediates/bundles/default/res/drawable/ripple_month_selector.xml"
+    },
+    {
+        "merged": "/Users/vikram/Documents/Development/Libraries/Vikram/DroidCalendarView/app/build/intermediates/res/merged/debug/drawable/ripple_date_selector.xml",
+        "source": "/Users/vikram/Documents/Development/Libraries/Vikram/DroidCalendarView/DCView/build/intermediates/bundles/default/res/drawable/ripple_date_selector.xml"
+    }
+]
