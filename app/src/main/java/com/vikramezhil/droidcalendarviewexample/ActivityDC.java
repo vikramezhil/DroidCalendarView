@@ -63,6 +63,8 @@ public class ActivityDC extends Activity
 
             public void onDCScreenData(List<String> onScreenDates)
             {
+                // Creating random bg and styles for the Droid Calendar
+
                 int[] primaryColors = new int[]{Color.parseColor("#673AB7"), Color.parseColor("#00BCD4"), Color.parseColor("#4CAF50"), Color.parseColor("#9C27B0")};
                 int[] secondaryColors = new int[]{Color.parseColor("#D1C4E9"), Color.parseColor("#B2EBF2"), Color.parseColor("#C8E6C9"), Color.parseColor("#E1BEE7")};
                 int[] contrastColors = new int[]{Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE};

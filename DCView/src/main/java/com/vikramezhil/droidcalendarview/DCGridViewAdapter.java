@@ -401,7 +401,10 @@ class DCGridViewAdapter extends BaseAdapter
                                 int clickPosition = ((int) view.getTag()) - DCFormats.DAYS_IN_A_WEEK.length;
                                 if(clickPosition >= 0 && clickPosition < dcData.recalibrateDates.size())
                                 {
+                                    // Getting and setting the clicked date
                                     clickedDate = dcData.recalibrateDates.get(clickPosition);
+
+                                    // Sending back an update with the clicked date
                                     onDCDatesListener.onDateClicked(DCUtil.getDateInFormat(clickedDate, dcData.datesFormat, dcData.clickedDateFormat, locale, locale));
 
                                     notifyDataSetChanged();
