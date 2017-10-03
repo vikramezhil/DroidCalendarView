@@ -12,9 +12,7 @@ import java.util.Locale;
 /**
  * Droid Calendar Utility
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 class DCUtil

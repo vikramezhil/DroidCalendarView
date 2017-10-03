@@ -18,9 +18,7 @@ import java.util.Locale;
 /**
  * Droid Calendar View
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 public class DCView extends LinearLayout implements OnDCDatesListener
@@ -81,6 +79,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
 
     // MARK: Droid Calendar Private Methods
 
+    /**
+     * Initializes the Droid Calendar View
+     *
+     * @param context The application context
+     */
     private void init(Context context)
     {
         View rootView = inflate(context, R.layout.dc, this);
@@ -375,7 +378,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar header text size
      *
-     * NOTE: Max size allowed 22f
+     * NOTE: Max size allowed "22f"
      *
      * @param size The desired size
      */
@@ -412,7 +415,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar previous button size
      *
-     * NOTE: Max size allowed 30f
+     * NOTE: Max size allowed "30f"
      *
      * @param size The desired size
      */
@@ -439,7 +442,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar next button size
      *
-     * NOTE: Max size allowed 30f
+     * NOTE: Max size allowed "30f"
      *
      * @param size The desired size
      */
@@ -520,7 +523,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar days headers text size
      *
-     * NOTE: Max size allowed 22f
+     * NOTE: Max size allowed "22f"
      *
      * @param size The desired size
      */
@@ -567,7 +570,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar days text size
      *
-     * NOTE: Max size allowed 22f
+     * NOTE: Max size allowed "22f"
      *
      * @param size The desired size
      */
@@ -644,6 +647,8 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar show row separator status
      *
+     * NOTE: Default is true
+     *
      * @param showRowSeparator True - show row separator, False - if otherwise
      */
     public void setDCShowRowSeparator(boolean showRowSeparator)
@@ -653,6 +658,8 @@ public class DCView extends LinearLayout implements OnDCDatesListener
 
     /**
      * Sets the Droid Calendar all dates clickable status
+     *
+     * NOTE: Default is true
      *
      * @param allDatesClickable True - all dates will be clickable, False - if otherwise
      */
@@ -664,7 +671,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar to enable only current & future dates
      *
-     * NOTE: Applicable only when all dates are clickable
+     * NOTE: Applicable only when all dates are clickable, default is false
      *
      * @param enableOnlyFutureDates True - Current & future dates will be enabled, False - if otherwise
      */
@@ -675,6 +682,8 @@ public class DCView extends LinearLayout implements OnDCDatesListener
 
     /**
      * Sets the Droid Calendar expanded status
+     *
+     * NOTE: Default is false
      *
      * @param expanded True - expanded, False - if otherwise
      */

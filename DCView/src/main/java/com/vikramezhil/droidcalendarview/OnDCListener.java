@@ -5,9 +5,7 @@ import java.util.List;
 /**
  * Droid Calendar Listener
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 public interface OnDCListener

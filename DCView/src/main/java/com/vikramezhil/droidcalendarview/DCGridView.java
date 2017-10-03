@@ -9,9 +9,7 @@ import android.widget.GridView;
 /**
  * Droid Calendar Grid View
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 class DCGridView extends GridView

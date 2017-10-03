@@ -3,9 +3,7 @@ package com.vikramezhil.droidcalendarview;
 /**
  * Droid Calendar Dates Listener
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 interface OnDCDatesListener

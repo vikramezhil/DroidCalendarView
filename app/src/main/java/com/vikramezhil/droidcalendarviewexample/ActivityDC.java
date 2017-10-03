@@ -17,9 +17,7 @@ import java.util.Random;
 /**
  * Droid Calendar Example Activity
  *
- * Created by Vikram Ezhil on 01/10/17.
- *
- * email: vikram.ezhil.1988@gmail.com
+ * @author Vikram Ezhil
  */
 
 public class ActivityDC extends Activity
