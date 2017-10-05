@@ -3,33 +3,59 @@
     android:id="@+id/dcParentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="@android:color/white">
 
-    <LinearLayout
-        android:id="@+id/dcChildLayout"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:layout_margin="@dimen/dc_margin"
-        android:orientation="vertical"
-        android:background="@drawable/ripple_date_selector">
-
-        <TextView
-            android:id="@+id/dcDayValue"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:maxLines="3"
-            android:text="@string/app_name"
-            android:textColor="@android:color/black"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </LinearLayout>
-
     <View
-        android:id="@+id/dcRowSeparator"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dc_row_separator_line_height"
-        android:layout_marginTop="@dimen/dc_margin"
-        android:layout_marginBottom="@dimen/dc_margin"
+        android:id="@+id/dcColSeparator"
+        android:layout_width="@dimen/dc_separator_line_height"
+        android:layout_height="match_parent"
         android:background="@color/dc_row_separator"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:id="@+id/dcChildLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dc_margin"
+            android:orientation="vertical"
+            android:background="@drawable/ripple_date_selector">
+
+            <TextView
+                android:id="@+id/dcDayValue"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textColor="@android:color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/dcDaySubValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/dc_margin"
+                android:layout_marginBottom="@dimen/dc_margin"
+                android:padding="@dimen/dc_margin"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textColor="@android:color/black"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dcRowSeparator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dc_separator_line_height"
+            android:layout_marginTop="@dimen/dc_margin"
+            android:layout_marginBottom="@dimen/dc_margin"
+            android:background="@color/dc_row_separator"/>
+    </LinearLayout>
 </LinearLayout>

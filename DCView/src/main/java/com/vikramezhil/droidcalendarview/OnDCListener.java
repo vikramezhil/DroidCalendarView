@@ -13,9 +13,13 @@ public interface OnDCListener
     /**
      * Sends an update with the on screen droid calendar dates
      *
-     * @param calendarDates The on screen droid calendar dates
+     * @param calendarPosition The position of the calendar
+     *
+     * @param calendarDatesWithPresent The on screen droid calendar dates (present month values)
+     *
+     * @param calendarDatesWithPastPresentFuture The on screen droid calendar dates (past month values, present month values, future month values)
      */
-    void onDCScreenData(List<String> calendarDates);
+    void onDCScreenData(int calendarPosition, List<String> calendarDatesWithPresent, List<String> calendarDatesWithPastPresentFuture);
 
     /**
      * Sends an update when a date is clicked in droid calendar

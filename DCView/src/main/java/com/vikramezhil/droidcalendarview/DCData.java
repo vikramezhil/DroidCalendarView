@@ -1,7 +1,9 @@
 package com.vikramezhil.droidcalendarview;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Droid Calendar Data
@@ -18,6 +20,7 @@ class DCData
     String datesFormat;
     ArrayList<String> dates = new ArrayList<>();
     ArrayList<String> recalibrateDates = new ArrayList<>();
+    Map<String, String> datesSubValues = new HashMap<>();
     Locale locale;
 
     /**
@@ -49,5 +52,48 @@ class DCData
         this.dates = dates;
         this.recalibrateDates = recalibrateDates;
         this.locale = locale;
+    }
+
+    /**
+     * Sets the dates sub values map
+     *
+     * @param datesSubValues The dates sub value list map
+     */
+    void setDatesSubValues(Map<String, String> datesSubValues)
+    {
+        this.datesSubValues = datesSubValues;
+    }
+
+    /**
+     * Sets the date sub value
+     *
+     * @param dateKey The date key
+     *
+     * @param subValue The sub value
+     */
+    void setDateSubValue(String dateKey, String subValue)
+    {
+        datesSubValues.put(dateKey, subValue);
+    }
+
+    /**
+     * Removes the date sub value based on key
+     *
+     * @param dateKey The date key
+     */
+    void removeDateSubValue(String dateKey)
+    {
+        if(datesSubValues.containsKey(dateKey))
+        {
+            datesSubValues.remove(dateKey);
+        }
+    }
+
+    /**
+     * Clear dates sub values
+     */
+    void clearDatesSubValues()
+    {
+        datesSubValues.clear();
     }
 }

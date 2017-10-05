@@ -19,20 +19,22 @@ public final class R {
         public static final int dc_grid_column_width=0x7f050000;
         public static final int dc_margin=0x7f050001;
         public static final int dc_month_button_padding=0x7f050002;
-        public static final int dc_row_separator_line_height=0x7f050003;
+        public static final int dc_separator_line_height=0x7f050003;
     }
     public static final class drawable {
         public static final int ripple_date_selector=0x7f020000;
         public static final int ripple_month_selector=0x7f020001;
     }
     public static final class id {
-        public static final int dcChildLayout=0x7f070006;
-        public static final int dcDayValue=0x7f070007;
+        public static final int dcChildLayout=0x7f070007;
+        public static final int dcColSeparator=0x7f070006;
+        public static final int dcDaySubValue=0x7f070009;
+        public static final int dcDayValue=0x7f070008;
         public static final int dcGV=0x7f070004;
         public static final int dcHeader=0x7f070002;
         public static final int dcHeaderLayout=0x7f070000;
         public static final int dcParentLayout=0x7f070005;
-        public static final int dcRowSeparator=0x7f070008;
+        public static final int dcRowSeparator=0x7f07000a;
         public static final int next=0x7f070003;
         public static final int previous=0x7f070001;
     }

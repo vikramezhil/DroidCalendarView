@@ -12,8 +12,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Droid Calendar View
@@ -25,6 +27,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
 {
     private final float maxHeaderTextSize = 22f;
     private final float maxDaysTextSize = 22f;
+    private final float maxDaysSubTextSize = 14f;
     private final float maxPrevNextButtonSize = 30f;
     private LinearLayout dcHeaderLayout;
     private TextView previous;
@@ -33,6 +36,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     private DCGridView dcGV;
     private DCGridViewAdapter dcGridViewAdapter;
     private List<DCData> dcDataList = new ArrayList<>();
+    private DCProperties dcProperties = new DCProperties();
     private int dcPosition = 0;
     private OnDCListener onDCListener;
 
@@ -73,7 +77,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         if(onDCListener != null && dcPosition >= 0 && dcPosition < dcDataList.size())
         {
             // Sending an update with the on screen droid calendar data
-            onDCListener.onDCScreenData(dcDataList.get(dcPosition).dates);
+            onDCListener.onDCScreenData(dcPosition, dcDataList.get(dcPosition).dates, dcDataList.get(dcPosition).recalibrateDates);
         }
     }
 
@@ -91,12 +95,13 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         dcHeaderLayout = rootView.findViewById(R.id.dcHeaderLayout);
         dcGV = rootView.findViewById(R.id.dcGV);
 
-        dcGridViewAdapter = new DCGridViewAdapter(context, this);
+        dcGridViewAdapter = new DCGridViewAdapter(context, dcProperties, this);
         dcGV.setAdapter(dcGridViewAdapter);
 
         previous = rootView.findViewById(R.id.previous);
         previous.setTypeface(DCUtil.getFATypeface(context));
         previous.setOnClickListener(new OnClickListener() {
+
             public void onClick(View view)
             {
                 // Moving the calendar to previous month
@@ -118,7 +123,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         });
 
         // Setting default droid calendar data initially
-        setDCData(12, DCFormats.DC_MY_FORMAT, DCFormats.D_FORMAT, DCFormats.DC_DMY_FORMAT, true, Locale.US);
+        setDCData(12, DCFormats.DC_MY_FORMAT, DCFormats.D_FORMAT, true, Locale.US);
         setDCClickedDate(DCUtil.getCurrentDate(DCFormats.DC_DMY_FORMAT, Locale.US), true);
     }
 
@@ -146,7 +151,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             if(onDCListener != null)
             {
                 // Sending an update with the on screen droid calendar data
-                onDCListener.onDCScreenData(dcDataList.get(dcPosition).dates);
+                onDCListener.onDCScreenData(dcPosition, dcDataList.get(dcPosition).dates, dcDataList.get(dcPosition).recalibrateDates);
             }
         }
     }
@@ -243,11 +248,26 @@ public class DCView extends LinearLayout implements OnDCDatesListener
 
             int startWeekPos = startDate.getDayOfWeek();
             int endWeekPos = endDate.getDayOfWeek();
-
             for(int catx=0;catx<startWeekPos - 1;catx++)
             {
                 // Adding empty data before the start date if applicable
-                recalibrateDatesList.add(null);
+                // recalibrateDatesList.add(null);
+
+                // Adding dates from previous month if applicable
+                if(catx == 0)
+                {
+                    recalibrateDatesList.add(DCUtil.getPreviousDate(datesToBeRecalibrate.get(0), dateFormat, locale));
+                }
+                else
+                {
+                    recalibrateDatesList.add(DCUtil.getPreviousDate(recalibrateDatesList.get(recalibrateDatesList.size() - 1), dateFormat, locale));
+                }
+            }
+
+            if(recalibrateDatesList.size() > 0)
+            {
+                // Reversing the dates list
+                Collections.reverse(recalibrateDatesList);
             }
 
             for(String date: datesToBeRecalibrate)
@@ -259,11 +279,22 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             for(int caty=endWeekPos;caty<DCFormats.DAYS_IN_A_WEEK.length;caty++)
             {
                 // Adding empty data after the end date if applicable
-                recalibrateDatesList.add(null);
+                // recalibrateDatesList.add(null);
+
+                // Adding dates from next month if applicable
+                recalibrateDatesList.add(DCUtil.getNextDate(recalibrateDatesList.get(recalibrateDatesList.size() - 1), dateFormat, locale));
             }
         }
 
         return recalibrateDatesList;
+    }
+
+    /**
+     * Updates the Droid Calendar Properties in the adapter
+     */
+    private void updateDCPropertiesInAdapter()
+    {
+        dcGridViewAdapter.setDCProperties(dcProperties);
     }
 
     // MARK: Droid Calendar Public Methods
@@ -277,13 +308,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      *
      * @param displayDateFormat The desired display date format
      *
-     * @param clickedDateFormat The desired clicked date format
-     *
      * @param future True - current & future months will be retrieved, False - current and previous months will be retrieved
      *
      * @param locale The date locale
      */
-    public void setDCData(int monthRange, String monthYearHeaderFormat, String displayDateFormat, String clickedDateFormat, boolean future, Locale locale)
+    public void setDCData(int monthRange, String monthYearHeaderFormat, String displayDateFormat, boolean future, Locale locale)
     {
         DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(DCFormats.DC_MY_FORMAT).withLocale(locale);
         DateTime dateTime;
@@ -304,7 +333,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             startMonthYear = dateTimeFormatter.print(dateTime);
         }
 
-        dcDataList = getCalendarData(startMonthYear, endMonthYear, DCFormats.DC_MY_FORMAT, monthYearHeaderFormat, displayDateFormat, clickedDateFormat, locale, false);
+        dcDataList = getCalendarData(startMonthYear, endMonthYear, DCFormats.DC_MY_FORMAT, monthYearHeaderFormat, displayDateFormat, DCFormats.DC_DMY_FORMAT, locale, false);
         if(dcDataList.size() > 0)
         {
             // Initially moving the calendar to the first position
@@ -325,17 +354,59 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      *
      * @param displayDateFormat The desired display date format
      *
-     * @param clickedDateFormat The desired clicked date format
-     *
      * @param locale The date locale
      */
-    public void setDCData(String startMonthYear, String endMonthYear, String passedMonthYearRangeFormat, String monthYearHeaderFormat, String displayDateFormat, String clickedDateFormat, Locale locale)
+    public void setDCData(String startMonthYear, String endMonthYear, String passedMonthYearRangeFormat, String monthYearHeaderFormat, String displayDateFormat, Locale locale)
     {
-        dcDataList = getCalendarData(startMonthYear, endMonthYear, passedMonthYearRangeFormat, monthYearHeaderFormat, displayDateFormat, clickedDateFormat, locale, true);
+        dcDataList = getCalendarData(startMonthYear, endMonthYear, passedMonthYearRangeFormat, monthYearHeaderFormat, displayDateFormat, DCFormats.DC_DMY_FORMAT, locale, true);
         if(dcDataList.size() > 0)
         {
             // Initially moving the calendar to the first position
             moveCalendar(0);
+        }
+    }
+
+    /**
+     * Sets the DC Dates sub data
+     *
+     * @param calendarPosition The calendar position
+     *
+     * @param date The date value in the calendar, NOTE: Date format should be "d/M/YYYY"
+     *
+     * @param subValue The sub value for the date
+     */
+    public void setDCDatesSubData(int calendarPosition, String date, String subValue)
+    {
+        if(dcDataList != null && calendarPosition < dcDataList.size() && date != null && subValue != null)
+        {
+            dcDataList.get(calendarPosition).setDateSubValue(date, subValue);
+
+            if(dcPosition == calendarPosition)
+            {
+                // Setting the calendar data in Droid Calendar Adapter
+                dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
+            }
+        }
+    }
+
+    /**
+     * Sets the DC Dates sub data
+     *
+     * @param calendarPosition The calendar position
+     *
+     * @param datesSubValues The dates & sub values list map, NOTE: Date key format should be "d/M/YYYY"
+     */
+    public void setDCDatesSubData(int calendarPosition, Map<String, String> datesSubValues)
+    {
+        if(dcDataList != null && calendarPosition < dcDataList.size() && datesSubValues != null)
+        {
+            dcDataList.get(calendarPosition).setDatesSubValues(datesSubValues);
+
+            if(dcPosition == calendarPosition)
+            {
+                // Setting the calendar data in Droid Calendar Adapter
+                dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
+            }
         }
     }
 
@@ -459,23 +530,31 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     /**
      * Sets the Droid Calendar clickable dates
      *
+     * NOTE: Date format should be "d/M/YYYY". Examples - 15/6/1988, 1/1/2017
+     *
      * @param clickableDates The desired clickable dates list
      */
     public void setDCClickableDates(List<String> clickableDates)
     {
-        dcGridViewAdapter.setClickableDates(clickableDates);
+        dcProperties.clickableDates = clickableDates;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
      * Sets the Droid Calendar clicked date
      *
+     * NOTE: The passed clicked date format should be "d/M/YYYY". Examples - 15/6/1988, 1/1/2017
+     *
      * @param clickedDate The date to be clicked
      *
-     * @param moveMonthToClickedDate True - moves month to the clicked date, False - if otherwise
+     * @param moveMonthToClickedDate True - moves calendar month to the clicked date, False - if otherwise
      */
     public void setDCClickedDate(String clickedDate, boolean moveMonthToClickedDate)
     {
-        dcGridViewAdapter.setClickedDate(clickedDate);
+        dcProperties.clickedDate = clickedDate;
+
+        updateDCPropertiesInAdapter();
 
         try
         {
@@ -492,7 +571,6 @@ public class DCView extends LinearLayout implements OnDCDatesListener
                     }
                 }
             }
-
         }
         catch (Exception e)
         {
@@ -507,7 +585,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysHeadersLayoutBGColor(int color)
     {
-        dcGridViewAdapter.setDaysHeadersLayoutBGColor(color);
+        dcProperties.daysHeadersLayoutBGColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -517,7 +597,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysHeadersTextColor(int color)
     {
-        dcGridViewAdapter.setDaysHeadersTextColor(color);
+        dcProperties.daysHeadersTextColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -534,7 +616,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             size = maxDaysTextSize;
         }
 
-        dcGridViewAdapter.setDaysHeaderTextSize(size);
+        dcProperties.daysHeaderTextSize = size;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -544,7 +628,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysHeaderTextStyle(int style)
     {
-        dcGridViewAdapter.setDaysHeaderTextStyle(style);
+        dcProperties.daysHeaderTextStyle = style;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -554,7 +640,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysLayoutBGColor(int color)
     {
-        dcGridViewAdapter.setDaysLayoutBGColor(color);
+        dcProperties.daysLayoutBGColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -564,7 +652,21 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysTextColor(int color)
     {
-        dcGridViewAdapter.setDaysTextColor(color);
+        dcProperties.daysTextColor = color;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar days sub text color
+     *
+     * @param color The desired color
+     */
+    public void setDCDaysSubTextColor(int color)
+    {
+        dcProperties.daysSubTextColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -581,7 +683,28 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             size = maxDaysTextSize;
         }
 
-        dcGridViewAdapter.setDaysTextSize(size);
+        dcProperties.daysTextSize = size;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar days sub text size
+     *
+     * NOTE: Max size allowed "14f"
+     *
+     * @param size The desired size
+     */
+    public void setDCDaysSubTextSize(float size)
+    {
+        if(size > maxDaysSubTextSize)
+        {
+            size = maxDaysSubTextSize;
+        }
+
+        dcProperties.daysSubTextSize = size;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -591,7 +714,21 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysTextStyle(int style)
     {
-        dcGridViewAdapter.setDaysTextStyle(style);
+        dcProperties.daysTextStyle = style;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar sub text style (NORMAL, BOLD, ITALIC, BOLD ITALIC)
+     *
+     * @param style The desired style
+     */
+    public void setDCDaysSubTextStyle(int style)
+    {
+        dcProperties.daysSubTextStyle = style;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -601,7 +738,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCClickableDaysBGColor(int color)
     {
-        dcGridViewAdapter.setClickableDaysBGColor(color);
+        dcProperties.clickableDaysBGColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -611,7 +750,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCClickableDaysTextColor(int color)
     {
-        dcGridViewAdapter.setClickableDaysTextColor(color);
+        dcProperties.clickableDaysTextColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -621,7 +762,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCClickedDayBGColor(int color)
     {
-        dcGridViewAdapter.setClickedDayBGColor(color);
+        dcProperties.clickedDayBGColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -631,7 +774,33 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCClickedDayTextColor(int color)
     {
-        dcGridViewAdapter.setClickedDayTextColor(color);
+        dcProperties.clickedDayTextColor = color;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar clicked day sub text color
+     *
+     * @param color The desired color
+     */
+    public void setDCClickedDaySubTextColor(int color)
+    {
+        dcProperties.clickedDaySubTextColor = color;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar column separator color
+     *
+     * @param color The desired color
+     */
+    public void setDCColSeparatorColor(int color)
+    {
+        dcProperties.colSeparatorColor = color;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -641,7 +810,51 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCRowSeparatorColor(int color)
     {
-        dcGridViewAdapter.setRowSeparatorColor(color);
+        dcProperties.rowSeparatorColor = color;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar show column separator status for day headers
+     *
+     * NOTE: Default is false
+     *
+     * @param showDaysHeaderColSeparator True - show days header column separator, False - if otherwise
+     */
+    public void setDCShowDaysHeaderColSeparator(boolean showDaysHeaderColSeparator)
+    {
+        dcProperties.showDaysHeaderColSeparator = showDaysHeaderColSeparator;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar show column separator status
+     *
+     * NOTE: Default is false
+     *
+     * @param showColSeparator True - show column separator, False - if otherwise
+     */
+    public void setDCShowColSeparator(boolean showColSeparator)
+    {
+        dcProperties.showColSeparator = showColSeparator;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar show row separator status for day headers
+     *
+     * NOTE: Default is false
+     *
+     * @param showDaysHeaderRowSeparator True - show days header row separator, False - if otherwise
+     */
+    public void setDCShowDaysHeaderRowSeparator(boolean showDaysHeaderRowSeparator)
+    {
+        dcProperties.showDaysHeaderRowSeparator = showDaysHeaderRowSeparator;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -653,7 +866,37 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCShowRowSeparator(boolean showRowSeparator)
     {
-        dcGridViewAdapter.setShowRowSeparator(showRowSeparator);
+        dcProperties.showRowSeparator = showRowSeparator;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar show past and future month dates status
+     *
+     * NOTE: Default is false
+     *
+     * @param showPastAndFutureMonthDates True - shows past and future months dates if applicable, False if otherwise
+     */
+    public void setDCShowPastAndFutureMonthDates(boolean showPastAndFutureMonthDates)
+    {
+        dcProperties.showPastAndFutureMonthDates = showPastAndFutureMonthDates;
+
+        updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the Droid Calendar show day sub value status
+     *
+     * NOTE: Default is false
+     *
+     * @param showDaySubValue True - show day sub value, False - if otherwise
+     */
+    public void setDCShowDaySubValue(boolean showDaySubValue)
+    {
+        dcProperties.showDaySubValue = showDaySubValue;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -665,19 +908,23 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCAllDatesClickable(boolean allDatesClickable)
     {
-        dcGridViewAdapter.setAllDatesClickable(allDatesClickable);
+        dcProperties.allDatesClickable = allDatesClickable;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
      * Sets the Droid Calendar to enable only current & future dates
      *
-     * NOTE: Applicable only when all dates are clickable, default is false
+     * NOTE: Default is false. Applicable only when all dates are clickable.
      *
-     * @param enableOnlyFutureDates True - Current & future dates will be enabled, False - if otherwise
+     * @param enableOnlyFutureDates True - current & future dates will be enabled, False - if otherwise
      */
     public void setDCEnableOnlyFutureDates(boolean enableOnlyFutureDates)
     {
-        dcGridViewAdapter.setEnableOnlyFutureDates(enableOnlyFutureDates);
+        dcProperties.enableOnlyFutureDates = enableOnlyFutureDates;
+
+        updateDCPropertiesInAdapter();
     }
 
     /**
@@ -685,7 +932,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      *
      * NOTE: Default is false
      *
-     * @param expanded True - expanded, False - if otherwise
+     * @param expanded True - view will not be scrollable, False - view will be scrollable
      */
     public void setDCExpanded(boolean expanded)
     {

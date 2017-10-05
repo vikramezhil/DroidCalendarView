@@ -25,7 +25,6 @@ public class ActivityDC extends Activity
     private final String TAG = "ActivityDC";
     private final String MY_FORMAT = "MMMM YYYY";
     private final String D_FORMAT = "d";
-    private final String DMY_FORMAT = "d/M/YYYY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,29 +37,35 @@ public class ActivityDC extends Activity
         final int calendarDataPos = (new Random()).nextInt(50);
         if(calendarDataPos % 2 == 0)
         {
-            dcView.setDCData(12, MY_FORMAT, D_FORMAT, DMY_FORMAT, true, Locale.US);
+            dcView.setDCData(12, MY_FORMAT, D_FORMAT, true, Locale.US);
             dcView.setDCAllDatesClickable(true);
             dcView.setDCEnableOnlyFutureDates(true);
         }
         else
         {
-            dcView.setDCData("Januar 2018", "April 2018", MY_FORMAT, MY_FORMAT, D_FORMAT, DMY_FORMAT, Locale.GERMAN);
+            dcView.setDCData("Januar 2018", "April 2018", MY_FORMAT, MY_FORMAT, D_FORMAT, Locale.GERMAN);
             dcView.setDCClickableDates(Arrays.asList("2/1/2018", "25/1/2018", "5/2/2018", "6/2/2018", "27/2/2018", "1/3/2018", "10/3/2018", "31/3/2018", "1/4/2018", "2/4/2018"));
             dcView.setDCClickedDate("2/1/2018", true);
             dcView.setDCAllDatesClickable(false);
-            dcView.setDCEnableOnlyFutureDates(false);
+            dcView.setDCShowDaySubValue(true);
+            dcView.setDCShowPastAndFutureMonthDates(true);
         }
 
         dcView.setDCExpanded(true);
         dcView.setDCHeaderTextSize(22f);
         dcView.setDCDaysHeaderTextSize(20f);
         dcView.setDCDaysTextSize(20f);
+        dcView.setDCDaysSubTextSize(12f);
         dcView.setDCPreviousButtonSize(30f);
         dcView.setDCNextButtonSize(30f);
         dcView.setOnDCListener(new OnDCListener() {
 
-            public void onDCScreenData(List<String> onScreenDates)
+            public void onDCScreenData(int calendarPosition, List<String> calendarDatesWithPresent, List<String> calendarDatesWithPastPresentFuture)
             {
+                Log.i(TAG, "Calendar position = " + calendarPosition);
+                Log.i(TAG, "Calendar dates: Present = " + calendarDatesWithPresent);
+                Log.i(TAG, "Calendar dates: Past, Present, Future = " + calendarDatesWithPastPresentFuture);
+
                 // Creating random bg and styles for the Droid Calendar
 
                 int[] primaryColors = new int[]{Color.parseColor("#673AB7"), Color.parseColor("#00BCD4"), Color.parseColor("#4CAF50"), Color.parseColor("#9C27B0")};
@@ -71,7 +76,14 @@ public class ActivityDC extends Activity
                 {
                     if(calendarDataPos % 2 == 0)
                     {
-                        dcView.setDCHeaderCapitalize();
+                        if(randomPos % 2 == 0)
+                        {
+                            dcView.setDCHeaderCapitalize();
+                        }
+                        else
+                        {
+                            dcView.setDCHeaderFullyCapitalize();
+                        }
                     }
                     else
                     {
@@ -86,19 +98,34 @@ public class ActivityDC extends Activity
                         dcView.setDCClickableDaysTextColor(contrastColors[randomPos]);
                         dcView.setDCClickedDayBGColor(primaryColors[randomPos]);
                         dcView.setDCClickedDayTextColor(contrastColors[randomPos]);
+                        dcView.setDCClickedDaySubTextColor(contrastColors[randomPos]);
+                        dcView.setDCColSeparatorColor(secondaryColors[randomPos]);
                         dcView.setDCRowSeparatorColor(secondaryColors[randomPos]);
                         dcView.setDCDaysHeadersTextColor(primaryColors[randomPos]);
                         dcView.setDCDaysTextColor(primaryColors[randomPos]);
+                        dcView.setDCDaysSubTextColor(primaryColors[randomPos]);
                         dcView.setDCDaysHeaderTextStyle(Typeface.NORMAL);
                         dcView.setDCDaysTextStyle(Typeface.NORMAL);
+                        dcView.setDCDaysSubTextStyle(Typeface.ITALIC);
+                        dcView.setDCShowDaysHeaderColSeparator(randomPos % 2 == 0);
+                        dcView.setDCShowDaysHeaderRowSeparator(randomPos % 2 == 0);
+                        dcView.setDCShowColSeparator(randomPos % 2 == 0);
                         dcView.setDCShowRowSeparator(randomPos % 2 == 0);
+
+                        for(String date: calendarDatesWithPastPresentFuture)
+                        {
+                            int randomCalories = (new Random()).nextInt(2500);
+
+                            // Setting the dates sub data
+                            dcView.setDCDatesSubData(calendarPosition, date, randomCalories + " kcal");
+                        }
                     }
                 }
             }
 
             public void onDCDateClicked(String date)
             {
-                Log.wtf(TAG, "Clicked date = " + date);
+                Log.i(TAG, "Clicked date = " + date);
             }
         });
     }

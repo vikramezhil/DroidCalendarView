@@ -6,7 +6,7 @@
     <dimen name="dc_grid_column_width">90dp</dimen>
     <dimen name="dc_margin">1dp</dimen>
     <dimen name="dc_month_button_padding">10dp</dimen>
-    <dimen name="dc_row_separator_line_height">1dp</dimen>
+    <dimen name="dc_separator_line_height">1dp</dimen>
     <string name="app_name">DC View</string>
     <string name="dc_columns">7</string>
     <string name="fa_next"></string>
