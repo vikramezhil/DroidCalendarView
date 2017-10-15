@@ -2,7 +2,10 @@ package com.vikramezhil.droidcalendarview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,10 +28,6 @@ import java.util.Map;
 
 public class DCView extends LinearLayout implements OnDCDatesListener
 {
-    private final float maxHeaderTextSize = 22f;
-    private final float maxDaysTextSize = 22f;
-    private final float maxDaysSubTextSize = 14f;
-    private final float maxPrevNextButtonSize = 30f;
     private LinearLayout dcHeaderLayout;
     private TextView previous;
     private TextView dcHeader;
@@ -37,10 +36,10 @@ public class DCView extends LinearLayout implements OnDCDatesListener
     private DCGridViewAdapter dcGridViewAdapter;
     private List<DCData> dcDataList = new ArrayList<>();
     private DCProperties dcProperties = new DCProperties();
-    private int dcPosition = 0;
     private OnDCListener onDCListener;
+    private GestureDetector gestureDetector;
 
-    // MARK: LinearLayout Constructor Methods
+    // MARK: Droid Calendar Constructor Methods
 
     public DCView(Context context)
     {
@@ -63,17 +62,36 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         init(context);
     }
 
+    // MARK: Droid Calendar Touch Methods
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event)
+    {
+        gestureDetector.onTouchEvent(event);
+
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        gestureDetector.onTouchEvent(event);
+
+        return super.onTouchEvent(event);
+    }
+
     // MARK: Droid Calendar Listener
 
     /**
      * Sets the Droid Calendar Listener
      *
-     * @param onDCListener The implement class instance to initialize the interface
+     * @param onDCListener The implemented class instance to initialize the interface
      */
     public void setOnDCListener(OnDCListener onDCListener)
     {
         this.onDCListener = onDCListener;
 
+        final int dcPosition = dcProperties.dcPosition;
         if(onDCListener != null && dcPosition >= 0 && dcPosition < dcDataList.size())
         {
             // Sending an update with the on screen droid calendar data
@@ -88,15 +106,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      *
      * @param context The application context
      */
-    private void init(Context context)
+    private void init(final Context context)
     {
         View rootView = inflate(context, R.layout.dc, this);
 
         dcHeaderLayout = rootView.findViewById(R.id.dcHeaderLayout);
-        dcGV = rootView.findViewById(R.id.dcGV);
-
-        dcGridViewAdapter = new DCGridViewAdapter(context, dcProperties, this);
-        dcGV.setAdapter(dcGridViewAdapter);
 
         previous = rootView.findViewById(R.id.previous);
         previous.setTypeface(DCUtil.getFATypeface(context));
@@ -105,7 +119,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             public void onClick(View view)
             {
                 // Moving the calendar to previous month
-                moveCalendar(dcPosition - 1);
+                moveCalendar(dcProperties.dcPosition - 1);
             }
         });
 
@@ -118,7 +132,77 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             public void onClick(View view)
             {
                 // Moving the calendar to next month
-                moveCalendar(dcPosition + 1);
+                moveCalendar(dcProperties.dcPosition + 1);
+            }
+        });
+
+        // Initializing the gesture detector
+        gestureDetector = new GestureDetector(context, new DCSwipeGestureDetector(new OnDCSwipeGestureListener()
+        {
+            @Override
+            public void onDCSwipedLeftToRight()
+            {
+                if(dcProperties.enableHorizontalSwipe)
+                {
+                    // Go to previous month
+                    previous.performClick();
+
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.horizontalSwipeAnimation);
+                }
+            }
+
+            @Override
+            public void onDCSwipedRightToLeft()
+            {
+                if(dcProperties.enableHorizontalSwipe)
+                {
+                    // Go to next month
+                    next.performClick();
+
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.horizontalSwipeAnimation);
+                }
+            }
+
+            @Override
+            public void onDCSwipedTopToBottom()
+            {
+                if(dcProperties.enableVerticalSwipe)
+                {
+                    // Go to previous month
+                    previous.performClick();
+
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.verticalSwipeAnimation);
+                }
+            }
+
+            @Override
+            public void onDCSwipedBottomToTop()
+            {
+                if(dcProperties.enableVerticalSwipe)
+                {
+                    // Go to next month
+                    next.performClick();
+
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.verticalSwipeAnimation);
+                }
+            }
+        }));
+
+        dcGV = rootView.findViewById(R.id.dcGV);
+        dcGridViewAdapter = new DCGridViewAdapter(context, dcProperties, this);
+        dcGV.setAdapter(dcGridViewAdapter);
+        dcGV.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
+                gestureDetector.onTouchEvent(motionEvent);
+
+                return true;
             }
         });
 
@@ -134,37 +218,66 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     private void moveCalendar(int position)
     {
+        if(position < 0)
+        {
+            position = dcDataList.size() - 1;
+        }
+        else if(position > dcDataList.size())
+        {
+            position = 0;
+        }
+
         if(position >= 0 && position < dcDataList.size())
         {
             // Setting the month position
-            dcPosition = position;
+            dcProperties.dcPosition = position;
 
-            // Showing (or) Hiding Next & Previous buttons
-            showHidePreviousNext();
+            if(dcProperties.showPrevAndNextButtons)
+            {
+                // Showing (or) Hiding Next & Previous buttons
+                showHidePrevAndNextButtons();
+            }
 
             // Setting the month & year header
-            dcHeader.setText(dcDataList.get(dcPosition).monthYearHeader);
+            dcHeader.setText(dcDataList.get(position).monthYearHeader);
 
             // Setting the calendar data in the Droid Calendar adapter
-            dcGridViewAdapter.setDcData(dcDataList.get(dcPosition));
+            dcGridViewAdapter.setDcData(dcDataList.get(position));
 
             if(onDCListener != null)
             {
                 // Sending an update with the on screen droid calendar data
-                onDCListener.onDCScreenData(dcPosition, dcDataList.get(dcPosition).dates, dcDataList.get(dcPosition).recalibrateDates);
+                onDCListener.onDCScreenData(position, dcDataList.get(position).dates, dcDataList.get(position).recalibrateDates);
             }
         }
     }
 
     /**
-     * Shows (or) Hides Previous & Next buttons
+     * Starts the animation
+     *
+     * @param context The application context
+     *
+     * @param animation The animation to be set
      */
-    private void showHidePreviousNext()
+    private void startAnimation(Context context, int animation)
     {
-        int nextDecrementPosition = dcPosition - 1;
+        if(dcProperties.showSwipeAnimation)
+        {
+            dcGV.clearAnimation();
+
+            dcGV.setAnimation(AnimationUtils.loadAnimation(context, animation));
+        }
+    }
+
+    /**
+     * Shows (or) Hides previous and next buttons
+     */
+    private void showHidePrevAndNextButtons()
+    {
+        int nextDecrementPosition = dcProperties.dcPosition - 1;
         previous.setVisibility(nextDecrementPosition < 0 ? View.INVISIBLE : View.VISIBLE);
 
-        int nextIncrementPosition = dcPosition + 1;
+        int nextIncrementPosition = dcProperties.dcPosition + 1;
         this.next.setVisibility(nextIncrementPosition > dcDataList.size() - 1 ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -381,7 +494,47 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         {
             dcDataList.get(calendarPosition).setDateSubValue(date, subValue);
 
-            if(dcPosition == calendarPosition)
+            if(dcProperties.dcPosition == calendarPosition)
+            {
+                // Setting the calendar data in Droid Calendar Adapter
+                dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
+            }
+        }
+    }
+
+    /**
+     * Removes the DC dates sub data by date
+     *
+     * @param calendarPosition The calendar position
+     *
+     * @param date The date value in the calendar, NOTE: Date format should be "d/M/YYYY"
+     */
+    public void removeDCDatesSubDataByDate(int calendarPosition, String date)
+    {
+        if(dcDataList != null && calendarPosition < dcDataList.size() && date != null)
+        {
+            dcDataList.get(calendarPosition).removeDateSubValue(date);
+
+            if(dcProperties.dcPosition == calendarPosition)
+            {
+                // Setting the calendar data in Droid Calendar Adapter
+                dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
+            }
+        }
+    }
+
+    /**
+     * Clears the DC dates sub data
+     *
+     * @param calendarPosition The calendar position
+     */
+    public void clearDCDatesSubData(int calendarPosition)
+    {
+        if(dcDataList != null && calendarPosition < dcDataList.size())
+        {
+            dcDataList.get(calendarPosition).clearDatesSubValues();
+
+            if(dcProperties.dcPosition == calendarPosition)
             {
                 // Setting the calendar data in Droid Calendar Adapter
                 dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
@@ -402,7 +555,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         {
             dcDataList.get(calendarPosition).setDatesSubValues(datesSubValues);
 
-            if(dcPosition == calendarPosition)
+            if(dcProperties.dcPosition == calendarPosition)
             {
                 // Setting the calendar data in Droid Calendar Adapter
                 dcGridViewAdapter.setDcData(dcDataList.get(calendarPosition));
@@ -455,9 +608,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCHeaderTextSize(float size)
     {
-        if(size > maxHeaderTextSize)
+        if(size > dcProperties.maxHeaderTextSize)
         {
-            size = maxHeaderTextSize;
+            size = dcProperties.maxHeaderTextSize;
         }
 
         dcHeader.setTextSize(size);
@@ -492,9 +645,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCPreviousButtonSize(float size)
     {
-        if(size > maxPrevNextButtonSize)
+        if(size > dcProperties.maxPrevNextButtonSize)
         {
-            size = maxPrevNextButtonSize;
+            size = dcProperties.maxPrevNextButtonSize;
         }
 
         previous.setTextSize(size);
@@ -519,9 +672,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCNextButtonSize(float size)
     {
-        if(size > maxPrevNextButtonSize)
+        if(size > dcProperties.maxPrevNextButtonSize)
         {
-            size = maxPrevNextButtonSize;
+            size = dcProperties.maxPrevNextButtonSize;
         }
 
         next.setTextSize(size);
@@ -611,9 +764,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysHeaderTextSize(float size)
     {
-        if(size > maxDaysTextSize)
+        if(size > dcProperties.maxDaysTextSize)
         {
-            size = maxDaysTextSize;
+            size = dcProperties.maxDaysTextSize;
         }
 
         dcProperties.daysHeaderTextSize = size;
@@ -678,9 +831,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysTextSize(float size)
     {
-        if(size > maxDaysTextSize)
+        if(size > dcProperties.maxDaysTextSize)
         {
-            size = maxDaysTextSize;
+            size = dcProperties.maxDaysTextSize;
         }
 
         dcProperties.daysTextSize = size;
@@ -697,9 +850,9 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     public void setDCDaysSubTextSize(float size)
     {
-        if(size > maxDaysSubTextSize)
+        if(size > dcProperties.maxDaysSubTextSize)
         {
-            size = maxDaysSubTextSize;
+            size = dcProperties.maxDaysSubTextSize;
         }
 
         dcProperties.daysSubTextSize = size;
@@ -813,6 +966,81 @@ public class DCView extends LinearLayout implements OnDCDatesListener
         dcProperties.rowSeparatorColor = color;
 
         updateDCPropertiesInAdapter();
+    }
+
+    /**
+     * Sets the horizontal swipe animation
+     *
+     * NOTE: Default animation is "fade in"
+     *
+     * @param horizontalSwipeAnimation The horizontal swipe animation file
+     */
+    public void setHorizontalSwipeAnimation(int horizontalSwipeAnimation)
+    {
+        dcProperties.horizontalSwipeAnimation = horizontalSwipeAnimation;
+    }
+
+    /**
+     * Sets the vertical swipe animation
+     *
+     * NOTE: Default animation is "fade in"
+     *
+     * @param verticalSwipeAnimation The vertical swipe animation file
+     */
+    public void setVerticalSwipeAnimation(int verticalSwipeAnimation)
+    {
+        dcProperties.verticalSwipeAnimation = verticalSwipeAnimation;
+    }
+
+    /**
+     * Sets the show previous and next buttons status
+     *
+     * NOTE: Default is true
+     *
+     * @param showPrevAndNextButtons True - show previous and next buttons, False - if otherwise
+     */
+    public void setShowPrevAndNextButtons(boolean showPrevAndNextButtons)
+    {
+        dcProperties.showPrevAndNextButtons = showPrevAndNextButtons;
+
+        previous.setVisibility(showPrevAndNextButtons ? VISIBLE : INVISIBLE);
+        next.setVisibility(showPrevAndNextButtons ? VISIBLE : INVISIBLE);
+    }
+
+    /**
+     * Sets the Droid Calendar horizontal swipe status
+     *
+     * NOTE: Default is false
+     *
+     * @param enableHorizontalSwipe True - horizontal swipe will be enabled, False - if otherwise
+     */
+    public void setDCEnableHorizontalSwipe(boolean enableHorizontalSwipe)
+    {
+        dcProperties.enableHorizontalSwipe = enableHorizontalSwipe;
+    }
+
+    /**
+     * Sets the Droid Calendar vertical swipe status
+     *
+     * NOTE: Default is false
+     *
+     * @param enableVerticalSwipe True - vertical swipe will be enabled, False - if otherwise
+     */
+    public void setDCEnableVerticalSwipe(boolean enableVerticalSwipe)
+    {
+        dcProperties.enableVerticalSwipe = enableVerticalSwipe;
+    }
+
+    /**
+     * Sets the Droid Calendar show swipe animation status
+     *
+     * NOTE: Default is false
+     *
+     * @param showSwipeAnimation True - show swipe animation, False - if otherwise
+     */
+    public void setDCShowSwipeAnimation(boolean showSwipeAnimation)
+    {
+        dcProperties.showSwipeAnimation = showSwipeAnimation;
     }
 
     /**

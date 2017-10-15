@@ -18,11 +18,21 @@ class DCProperties
 
     String clickedDate;
 
+    float maxHeaderTextSize = 22f;
+
+    float maxDaysTextSize = 22f;
+
+    float maxDaysSubTextSize = 14f;
+
+    float maxPrevNextButtonSize = 30f;
+
     float daysHeaderTextSize = 18f;
 
     float daysTextSize = 18f;
 
     float daysSubTextSize = 15f;
+
+    int dcPosition = 0;
 
     int daysHeaderTextStyle = Typeface.NORMAL;
 
@@ -53,6 +63,18 @@ class DCProperties
     int colSeparatorColor = Color.parseColor("#F5F5F5");
 
     int rowSeparatorColor = Color.parseColor("#F5F5F5");
+
+    int horizontalSwipeAnimation = R.anim.anim_fadein;
+
+    int verticalSwipeAnimation = R.anim.anim_fadein;
+
+    boolean showPrevAndNextButtons = true;
+
+    boolean enableHorizontalSwipe = false;
+
+    boolean enableVerticalSwipe = false;
+
+    boolean showSwipeAnimation = false;
 
     boolean showDaysHeaderColSeparator = false;
 

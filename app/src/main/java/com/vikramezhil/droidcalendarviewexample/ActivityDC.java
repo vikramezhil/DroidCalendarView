@@ -40,6 +40,10 @@ public class ActivityDC extends Activity
             dcView.setDCData(12, MY_FORMAT, D_FORMAT, true, Locale.US);
             dcView.setDCAllDatesClickable(true);
             dcView.setDCEnableOnlyFutureDates(true);
+            dcView.setDCEnableHorizontalSwipe(true);
+            dcView.setDCEnableVerticalSwipe(true);
+            dcView.setDCShowSwipeAnimation(true);
+            dcView.setShowPrevAndNextButtons(false);
         }
         else
         {
@@ -47,7 +51,6 @@ public class ActivityDC extends Activity
             dcView.setDCClickableDates(Arrays.asList("2/1/2018", "25/1/2018", "5/2/2018", "6/2/2018", "27/2/2018", "1/3/2018", "10/3/2018", "31/3/2018", "1/4/2018", "2/4/2018"));
             dcView.setDCClickedDate("2/1/2018", true);
             dcView.setDCAllDatesClickable(false);
-            dcView.setDCShowDaySubValue(true);
             dcView.setDCShowPastAndFutureMonthDates(true);
         }
 
@@ -112,12 +115,24 @@ public class ActivityDC extends Activity
                         dcView.setDCShowColSeparator(randomPos % 2 == 0);
                         dcView.setDCShowRowSeparator(randomPos % 2 == 0);
 
-                        for(String date: calendarDatesWithPastPresentFuture)
+                        int randomClearSubValues = (new Random()).nextInt(primaryColors.length);
+                        if(randomClearSubValues % 2 == 0)
                         {
-                            int randomCalories = (new Random()).nextInt(2500);
+                            // Clearing out the dates sub data if applicable
+                            dcView.clearDCDatesSubData(calendarPosition);
+                            dcView.setDCShowDaySubValue(false);
+                        }
+                        else
+                        {
+                            for(String date: calendarDatesWithPastPresentFuture)
+                            {
+                                int randomCalories = (new Random()).nextInt(2500);
 
-                            // Setting the dates sub data
-                            dcView.setDCDatesSubData(calendarPosition, date, randomCalories + " kcal");
+                                // Setting the dates sub data
+                                dcView.setDCDatesSubData(calendarPosition, date, randomCalories + " kcal");
+                            }
+
+                            dcView.setDCShowDaySubValue(true);
                         }
                     }
                 }

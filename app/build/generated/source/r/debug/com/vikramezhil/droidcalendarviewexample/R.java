@@ -8,39 +8,43 @@
 package com.vikramezhil.droidcalendarviewexample;
 
 public final class R {
+    public static final class anim {
+        public static final int anim_fadein=0x7f050000;
+    }
     public static final class attr {
     }
     public static final class color {
-        public static final int colorAccent=0x7f050000;
-        public static final int colorPrimary=0x7f050001;
-        public static final int colorPrimaryDark=0x7f050002;
-        public static final int dc_month_header_bg=0x7f050003;
-        public static final int dc_row_separator=0x7f050004;
-        public static final int ripple_select_color=0x7f050005;
+        public static final int colorAccent=0x7f060000;
+        public static final int colorPrimary=0x7f060001;
+        public static final int colorPrimaryDark=0x7f060002;
+        public static final int dc_month_header_bg=0x7f060003;
+        public static final int dc_row_separator=0x7f060004;
+        public static final int ripple_select_color=0x7f060005;
     }
     public static final class dimen {
-        public static final int dc_grid_column_width=0x7f060000;
-        public static final int dc_margin=0x7f060001;
-        public static final int dc_month_button_padding=0x7f060002;
-        public static final int dc_separator_line_height=0x7f060003;
+        public static final int dc_grid_column_width=0x7f070000;
+        public static final int dc_margin=0x7f070001;
+        public static final int dc_month_button_padding=0x7f070002;
+        public static final int dc_separator_line_height=0x7f070003;
     }
     public static final class drawable {
         public static final int ripple_date_selector=0x7f020000;
         public static final int ripple_month_selector=0x7f020001;
     }
     public static final class id {
-        public static final int dcChildLayout=0x7f090008;
-        public static final int dcColSeparator=0x7f090007;
-        public static final int dcDaySubValue=0x7f09000a;
-        public static final int dcDayValue=0x7f090009;
-        public static final int dcGV=0x7f090005;
-        public static final int dcHeader=0x7f090003;
-        public static final int dcHeaderLayout=0x7f090001;
-        public static final int dcParentLayout=0x7f090006;
-        public static final int dcRowSeparator=0x7f09000b;
-        public static final int dcView=0x7f090000;
-        public static final int next=0x7f090004;
-        public static final int previous=0x7f090002;
+        public static final int dcChildLayout=0x7f0a0009;
+        public static final int dcColSeparator=0x7f0a0008;
+        public static final int dcDaySubValue=0x7f0a000b;
+        public static final int dcDayValue=0x7f0a000a;
+        public static final int dcGV=0x7f0a0006;
+        public static final int dcHeader=0x7f0a0004;
+        public static final int dcHeaderLayout=0x7f0a0002;
+        public static final int dcLayout=0x7f0a0001;
+        public static final int dcParentLayout=0x7f0a0007;
+        public static final int dcRowSeparator=0x7f0a000c;
+        public static final int dcView=0x7f0a0000;
+        public static final int next=0x7f0a0005;
+        public static final int previous=0x7f0a0003;
     }
     public static final class layout {
         public static final int activity_dc=0x7f040000;
@@ -53,14 +57,14 @@ public final class R {
         public static final int ic_launcher_round=0x7f030001;
     }
     public static final class string {
-        public static final int app_name=0x7f070000;
-        public static final int dc_columns=0x7f070001;
-        public static final int fa_next=0x7f070002;
-        public static final int fa_previous=0x7f070003;
+        public static final int app_name=0x7f080000;
+        public static final int dc_columns=0x7f080001;
+        public static final int fa_next=0x7f080002;
+        public static final int fa_previous=0x7f080003;
     }
     public static final class style {
         /**  Customize your theme here. 
          */
-        public static final int AppTheme=0x7f080000;
+        public static final int AppTheme=0x7f090000;
     }
 }
