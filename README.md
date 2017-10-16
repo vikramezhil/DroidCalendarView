@@ -93,10 +93,12 @@ Set and implement the droid calendar listener methods
 dcView.setOnDCListener(this);
 
 // Implementing the droid calendar listener methods
+@Override
 void onDCScreenData(int calendarPosition, List<String> calendarDatesWithPresent, List<String> calendarDatesWithPastPresentFuture)
 {
     // Triggered whenever the on screen data changes in droid calendar
 }
+@Override
 void onDCDateClicked(String date)
 {
    // Triggered when a date is clicked in droid calendar
