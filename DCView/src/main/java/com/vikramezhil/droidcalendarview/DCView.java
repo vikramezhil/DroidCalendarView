@@ -205,7 +205,7 @@ public class DCView extends LinearLayout implements OnDCDatesListener
                 return true;
             }
         });
-
+        
         // Setting default droid calendar data initially
         setDCData(12, DCFormats.DC_MY_FORMAT, DCFormats.D_FORMAT, true, Locale.US);
         setDCClickedDate(DCUtil.getCurrentDate(DCFormats.DC_DMY_FORMAT, Locale.US), true);

@@ -51,6 +51,7 @@ public class ActivityDC extends Activity
             dcView.setDCClickableDates(Arrays.asList("2/1/2018", "25/1/2018", "5/2/2018", "6/2/2018", "27/2/2018", "1/3/2018", "10/3/2018", "31/3/2018", "1/4/2018", "2/4/2018"));
             dcView.setDCClickedDate("2/1/2018", true);
             dcView.setDCAllDatesClickable(false);
+            dcView.setDCShowDaySubValue(true);
             dcView.setDCShowPastAndFutureMonthDates(true);
         }
 
