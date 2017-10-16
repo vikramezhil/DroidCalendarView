@@ -144,11 +144,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             {
                 if(dcProperties.enableHorizontalSwipe)
                 {
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.horizontalSwipeAnimation, dcProperties.dcPosition - 1);
+
                     // Go to previous month
                     previous.performClick();
-
-                    // Starting the animation if applicable
-                    startAnimation(context, dcProperties.horizontalSwipeAnimation);
                 }
             }
 
@@ -157,11 +157,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             {
                 if(dcProperties.enableHorizontalSwipe)
                 {
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.horizontalSwipeAnimation, dcProperties.dcPosition + 1);
+
                     // Go to next month
                     next.performClick();
-
-                    // Starting the animation if applicable
-                    startAnimation(context, dcProperties.horizontalSwipeAnimation);
                 }
             }
 
@@ -170,11 +170,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             {
                 if(dcProperties.enableVerticalSwipe)
                 {
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.verticalSwipeAnimation, dcProperties.dcPosition - 1);
+
                     // Go to previous month
                     previous.performClick();
-
-                    // Starting the animation if applicable
-                    startAnimation(context, dcProperties.verticalSwipeAnimation);
                 }
             }
 
@@ -183,11 +183,11 @@ public class DCView extends LinearLayout implements OnDCDatesListener
             {
                 if(dcProperties.enableVerticalSwipe)
                 {
+                    // Starting the animation if applicable
+                    startAnimation(context, dcProperties.verticalSwipeAnimation, dcProperties.dcPosition + 1);
+
                     // Go to next month
                     next.performClick();
-
-                    // Starting the animation if applicable
-                    startAnimation(context, dcProperties.verticalSwipeAnimation);
                 }
             }
         }));
@@ -218,15 +218,6 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      */
     private void moveCalendar(int position)
     {
-        if(position < 0)
-        {
-            position = dcDataList.size() - 1;
-        }
-        else if(position > dcDataList.size())
-        {
-            position = 0;
-        }
-
         if(position >= 0 && position < dcDataList.size())
         {
             // Setting the month position
@@ -258,13 +249,14 @@ public class DCView extends LinearLayout implements OnDCDatesListener
      * @param context The application context
      *
      * @param animation The animation to be set
+     *
+     * @param position The calendar position
      */
-    private void startAnimation(Context context, int animation)
+    private void startAnimation(Context context, int animation, int position)
     {
-        if(dcProperties.showSwipeAnimation)
+        if(dcProperties.showSwipeAnimation && position >= 0 && position < dcDataList.size())
         {
             dcGV.clearAnimation();
-
             dcGV.setAnimation(AnimationUtils.loadAnimation(context, animation));
         }
     }
