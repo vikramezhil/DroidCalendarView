@@ -33,7 +33,7 @@ Add this to your app build.gradle:
 
 ```java
 dependencies {
-    compile 'com.github.vikramezhil:DroidCalendarView:v1.0.2’
+    compile 'com.github.vikramezhil:DroidCalendarView:v1.0.2'
 }
 ```
 
